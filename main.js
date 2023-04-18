@@ -15,6 +15,23 @@ let backgroundImage, spaceshipImage, bulletImage, enemyImage, gameOverImage;
 let spaceshipX = canvas.width / 2 - 30;
 let spaceshipY = canvas.height - 60;
 
+let bulletList = []; //총알들을 저장하는 리스트
+class Bullet {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.init = function () {
+      this.x = spaceshipX + 22;
+      this.y = spaceshipY;
+
+      bulletList.push(this);
+    };
+    this.update = function () {
+      this.y -= 7;
+    };
+  }
+}
+
 function loadImage() {
   backgroundImage = new Image();
   backgroundImage.src = "images/background.jpeg";
@@ -36,12 +53,21 @@ let keysDown = {};
 function setupKeyboardListener() {
   document.addEventListener("keydown", function (event) {
     keysDown[event.key] = true;
-    console.log("키다운 객체 값", keysDown);
+    console.log("스페이스바", event.key);
   });
   document.addEventListener("keyup", function (event) {
     delete keysDown[event.key];
-    console.log("클릭후", keysDown);
+
+    if (event.keyCode == 32) {
+      createBullet();
+    }
   });
+}
+
+function createBullet() {
+  console.log("총알리스트", bulletList);
+  let b = new Bullet();
+  b.init();
 }
 
 function update() {
@@ -58,12 +84,19 @@ function update() {
   if (spaceshipX >= canvas.width - 60) {
     spaceshipX = canvas.width - 60;
   }
-  // 우주선 화면 밖으로 안나가게 하기
+
+  for (let i = 0; i < bulletList.length; i++) {
+    bulletList[i].update();
+  }
 }
 
 function render() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
   ctx.drawImage(spaceshipImage, spaceshipX, spaceshipY);
+
+  for (let i = 0; i < bulletList.length; i++) {
+    ctx.drawImage(bulletImage, bulletList[i].x, bulletList[i].y);
+  }
 }
 
 function main() {
