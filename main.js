@@ -35,20 +35,20 @@ function loadImage() {
 let keysDown = {};
 function setupKeyboardListener() {
   document.addEventListener("keydown", function (event) {
-    keysDown[event.keyCode] = true;
+    keysDown[event.key] = true;
     console.log("키다운 객체 값", keysDown);
   });
   document.addEventListener("keyup", function (event) {
-    delete keysDown[event.keyCode];
+    delete keysDown[event.key];
     console.log("클릭후", keysDown);
   });
 }
 
 function update() {
-  if (39 in keysDown) {
+  if ("ArrowRight" in keysDown) {
     spaceshipX += 5; //우주선 속도
   }
-  if (37 in keysDown) {
+  if ("ArrowLeft" in keysDown) {
     spaceshipX -= 5;
   }
 
