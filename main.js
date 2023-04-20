@@ -140,8 +140,10 @@ function update() {
   }
 
   for (let i = 0; i < bulletList.length; i++) {
-    bulletList[i].update();
-    bulletList[i].checkHit();
+    if (bulletList[i].alive) {
+      bulletList[i].update();
+      bulletList[i].checkHit();
+    }
   }
 
   for (let i = 0; i < enemyList.length; i++) {
@@ -152,6 +154,9 @@ function update() {
 function render() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
   ctx.drawImage(spaceshipImage, spaceshipX, spaceshipY);
+  ctx.fillText(`Score:${score}`, 20, 20);
+  ctx.fillStyle = "white";
+  ctx.font = "20px Arial";
 
   for (let i = 0; i < bulletList.length; i++) {
     if (bulletList[i].alive) {
