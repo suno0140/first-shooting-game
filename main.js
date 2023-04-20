@@ -11,24 +11,43 @@ document.body.appendChild(canvas);
 
 let backgroundImage, spaceshipImage, bulletImage, enemyImage, gameOverImage;
 let gameOver = false;
+let score = 0;
 
 //우주선 좌표
 let spaceshipX = canvas.width / 2 - 30;
 let spaceshipY = canvas.height - 60;
 
 let bulletList = []; //총알들을 저장하는 리스트
+
 class Bullet {
   constructor() {
     this.x = 0;
     this.y = 0;
+
     this.init = function () {
       this.x = spaceshipX + 22;
       this.y = spaceshipY;
+      this.alive = true;
 
       bulletList.push(this);
     };
+
     this.update = function () {
       this.y -= 7;
+    };
+
+    this.checkHit = function () {
+      for (let i = 0; i < enemyList.length; i++) {
+        if (
+          this.y <= enemyList[i].y &&
+          this.x >= enemyList[i].x &&
+          this.x <= enemyList[i].x + 40
+        ) {
+          score++;
+          this.alive = false;
+          enemyList.splice(i, 1);
+        }
+      }
     };
   }
 }
@@ -72,22 +91,24 @@ function generateRandomValue(min, max) {
 
 let enemyList = [];
 
-function Enemy() {
-  this.x = 0;
-  this.y = 0;
-  this.init = function () {
+class Enemy {
+  constructor() {
+    this.x = 0;
     this.y = 0;
-    this.x = generateRandomValue(0, canvas.width - 48);
-    enemyList.push(this);
-  };
-  this.update = function () {
-    this.y += 5; //적군 속도 조절
+    this.init = function () {
+      this.y = 0;
+      this.x = generateRandomValue(0, canvas.width - 48);
+      enemyList.push(this);
+    };
+    this.update = function () {
+      this.y += 1; //적군 속도 조절
 
-    if (this.y >= canvas.height - 48) {
-      gameOver = true;
-      console.log("gameover");
-    }
-  };
+      if (this.y >= canvas.height - 48) {
+        gameOver = true;
+        console.log("gameover");
+      }
+    };
+  }
 }
 
 function createBullet() {
@@ -120,6 +141,7 @@ function update() {
 
   for (let i = 0; i < bulletList.length; i++) {
     bulletList[i].update();
+    bulletList[i].checkHit();
   }
 
   for (let i = 0; i < enemyList.length; i++) {
@@ -132,7 +154,9 @@ function render() {
   ctx.drawImage(spaceshipImage, spaceshipX, spaceshipY);
 
   for (let i = 0; i < bulletList.length; i++) {
-    ctx.drawImage(bulletImage, bulletList[i].x, bulletList[i].y);
+    if (bulletList[i].alive) {
+      ctx.drawImage(bulletImage, bulletList[i].x, bulletList[i].y);
+    }
   }
 
   for (let i = 0; i < enemyList.length; i++) {
